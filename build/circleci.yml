@@ -1,0 +1,10 @@
+version: 2.1
+jobs:
+  build:
+    docker: 
+      - image: getporter/porter:latest
+    steps:
+      - setup_remote_docker
+      - run: porter create
+      - run: "porter build -v || :"
+      - run: docker build -t hello-installer --build-arg BUNDLE_DIR=/cnab/app .
