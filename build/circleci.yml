@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker: 
-      - image: getporter/porter:latest
+      - image: getporter/workshop:latest
     steps:
       - setup_remote_docker
       - run: porter create
