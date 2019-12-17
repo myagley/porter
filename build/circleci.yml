@@ -1,6 +1,9 @@
-version: 2.1
+version: 2.1 
 jobs:
   build:
+    branches:
+      only:
+        - circle # list of branches to build
     docker: 
       - image: getporter/porter:latest
     steps:
