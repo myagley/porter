@@ -7,7 +7,10 @@ import (
 	"get.porter.sh/porter/pkg/config"
 	"get.porter.sh/porter/pkg/credentials"
 	"github.com/cnabio/cnab-go/driver"
+	"github.com/cnabio/cnab-go/driver/docker"
 	"github.com/cnabio/cnab-go/driver/lookup"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 )
 
 type Runtime struct {
@@ -40,6 +43,21 @@ func (d *Runtime) newDriver(driverName string, claimName string, args ActionArgu
 		}
 
 		configurable.SetConfig(driverCfg)
+	}
+
+	// Add docker specific options.
+	// There is probably a better way to do this?
+	if docker, ok := driverImpl.(*docker.Driver); ok {
+		mounts := func(config *container.Config, hostConfig *container.HostConfig) error {
+			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
+				Type:   mount.TypeBind,
+				Source: "/var/run/docker.sock",
+				Target: "/var/run/docker.sock",
+			})
+			return nil
+		}
+
+		docker.AddConfigurationOptions(mounts)
 	}
 
 	return driverImpl, err
